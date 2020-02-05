@@ -1,6 +1,8 @@
 package com.galvanize.repositories;
 
 import com.galvanize.entities.Movie;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -13,6 +15,8 @@ import java.util.Optional;
 
 @Repository
 public class MovieJdbcRepository {
+
+    public static Logger LOGGER = LoggerFactory.getLogger(MovieJpaRepository.class);
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert insertMovie;
@@ -78,18 +82,22 @@ public class MovieJdbcRepository {
         String sql = "update movies set";
         Optional<Movie> officer = findById(id);
         if (!officer.isPresent()) {
-            throw new RuntimeException("Movie with id " + id + " not found!");
+            LOGGER.error("Movie with id " + id + " not found!");
+//            throw new RuntimeException("Movie with id " + id + " not found!");
         }else if(parameters.isEmpty()){
-            throw new RuntimeException("No changes provided: "+parameters);
+            LOGGER.error("No changes provided: "+parameters);
+//            throw new RuntimeException("No changes provided: "+parameters);
         }else{
             StringBuilder paras = new StringBuilder();
             for (String key : parameters.keySet()){
                 if (paras.length() != 0) paras.append(", ");
                 paras.append(" `"+key+"` = '"+parameters.get(key)+"' ");
+                LOGGER.debug("Appended: "+" `"+key+"` = '"+parameters.get(key)+"' ");
             }
 
             String update = sql+paras+" where movie_id = ?";
             System.out.println("update sql: "+update);
+            LOGGER.info("Update SQL: "+ update);
 
             jdbcTemplate.update(update, id);
         }
