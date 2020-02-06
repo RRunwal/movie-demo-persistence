@@ -1,4 +1,4 @@
-package com.galvanize;
+package com.galvanize.repositories;
 
 import com.galvanize.entities.Movie;
 import com.galvanize.repositories.MovieJdbcRepository;
